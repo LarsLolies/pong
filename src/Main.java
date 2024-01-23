@@ -9,6 +9,7 @@ public class Main {
         PongGame pongGame =new PongGame(boardWidth, boardHight);
         frame.add(pongGame);
         frame.pack();
+        pongGame.requestFocus();
 
 
     }
