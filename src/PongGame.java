@@ -54,9 +54,12 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
         while(velocityX == 0) {
             this.velocityX = random.nextInt(-3, 4);
+            this.velocityX=random.nextInt(-1,2);
         }
 
+
         this.velocityY= random.nextInt(-3, 4);
+        this.velocityY= random.nextInt(-1,2);
 
 
 
@@ -75,12 +78,13 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
         g.fill3DRect(ball.x*tileSize, ball.y*tileSize, tileSize, tileSize, true);
 
         //player1
-        for(int i =0; i<player1.length; i++){
-            g.fill3DRect(player1[i].x*tileSize, player1[i].y*tileSize, tileSize, tileSize, true);
-        }
-        //player2
-        for(int i =0; i<player2.length; i++){
-            g.fill3DRect(player2[i].x*tileSize, player2[i].y*tileSize, tileSize, tileSize, true);
+        drawPlayer(g, player1);
+        drawPlayer(g, player2);
+    }
+
+    public void drawPlayer(Graphics g, Tile[] player){
+        for(int i =0; i<player.length; i++){
+            g.fill3DRect(player[i].x*tileSize, player[i].y*tileSize, tileSize, tileSize, true);
         }
     }
 
@@ -99,9 +103,9 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
     }
     public boolean ballHitsPaddle(Tile[] paddle){
-        if(ball.y==paddle[0].y) {
+        if(ball.x==paddle[0].x) {
             for (int i = 0; i < paddle.length; i++) {
-                if (ball.x == paddle[i].x) {
+                if (ball.y == paddle[i].y) {
                     return true;
                 }
             }
@@ -109,14 +113,19 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
         return false;
     }
     public void hitBall(Tile[] paddle){
-
+        velocityX = -velocityX;
+        do{velocityX += random.nextInt(-1,2);}
+        while (Math.abs(velocityX)<=3 );
     }
     public void moveBall(){
         ball.x += velocityX;
         ball.y += velocityY;
         bounceOfWall();
         if(ballHitsPaddle(player1)){
-
+            hitBall(player1);
+        }
+        if(ballHitsPaddle(player2)){
+            hitBall(player2);
         }
     }
 
@@ -153,6 +162,18 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_W ){
+            player1Speed = 0;
+        }
+        else if(e.getKeyCode()== KeyEvent.VK_S ){
+            player1Speed=0;
+        }
+        if(e.getKeyCode()==KeyEvent.VK_UP){
+            player2Speed=-0;
+        }
+        else if(e.getKeyCode()==KeyEvent.VK_DOWN){
+            player2Speed=0;
+        }
 
     }
 
