@@ -11,14 +11,21 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
     int tileSize = 12;
 
     Tile ball;
-    int velocityX=0;
-    int velocityY;
+    int directionX=0;
+    int speedX=0;
+    int directionY;
+    int speedY=0;
+
+    int moveBallCounterX = 0;
+    int moveBallCounterY = 0;
 
     Tile[] player1;
     int player1Speed=0;
 
     Tile[] player2;
     int player2Speed=0;
+
+    int movePlayerCounter=0;
 
 
 
@@ -27,6 +34,7 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
     Timer gameLoop;
     Random random;
+    int delay =13;
 
 
 
@@ -52,18 +60,20 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
 
 
-        while(velocityX == 0) {
-            this.velocityX = random.nextInt(-3, 4);
-            this.velocityX=random.nextInt(-1,2);
+        while(directionY == 0 ) {
+            this.directionY=random.nextInt(-1,2);
         }
+        speedY=random.nextInt(0,2);
 
 
-        this.velocityY= random.nextInt(-3, 4);
-        this.velocityY= random.nextInt(-1,2);
+//        this.directionX= random.nextInt(-3, 4);
+        while (directionX==0){
+            this.directionX= random.nextInt(-1,2);
+        }
+        speedX=random.nextInt(1,2);
 
 
-
-        this.gameLoop = new Timer(150, this);
+        this.gameLoop = new Timer(delay, this);
         this.gameLoop.start();
     }
 
@@ -90,15 +100,30 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        moveBall();
-        movePlayer(player1, player1Speed);
-        movePlayer(player2, player2Speed);
+        if(moveBallCounterX % (6/speedX) == 0) {
+            moveBallX();
+        }
+        moveBallCounterX++;
+
+        if(speedY!=0){
+            if(moveBallCounterY % (6/speedY) == 0) {
+                moveBallY();
+            }
+            moveBallCounterY++;
+        }
+
+        if(movePlayerCounter%3==0){
+            movePlayer(player1, player1Speed);
+            movePlayer(player2, player2Speed);
+        }
+        movePlayerCounter ++;
+
         repaint();
     }
 
     public void bounceOfWall(){
         if(ball.y*tileSize<0 ||ball.y*tileSize>boardHeight ){
-            velocityY=-velocityY;
+            directionY=-directionY;
         }
 
     }
@@ -113,20 +138,25 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
         return false;
     }
     public void hitBall(Tile[] paddle){
-        velocityX = -velocityX;
-        do{velocityX += random.nextInt(-1,2);}
-        while (Math.abs(velocityX)<=3 );
+        directionX = -directionX;
+        speedX=random.nextInt(1,3);
+        speedY=random.nextInt(0,2);
+//        do{speedX += random.nextInt(-1,2);}
+//        while (Math.abs(speedX)<=3 );
     }
-    public void moveBall(){
-        ball.x += velocityX;
-        ball.y += velocityY;
-        bounceOfWall();
+    public void moveBallX(){
+        ball.x += directionX;
         if(ballHitsPaddle(player1)){
             hitBall(player1);
         }
         if(ballHitsPaddle(player2)){
             hitBall(player2);
         }
+    }
+
+    public void moveBallY(){
+        ball.y += directionY;
+        bounceOfWall();
     }
 
     public void movePlayer(Tile[] paddle, int speed){
@@ -146,16 +176,19 @@ public class PongGame extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_W ){
-            player1Speed = -2;
+            player1Speed = -1;
         }
         else if(e.getKeyCode()== KeyEvent.VK_S ){
-            player1Speed=2;
+            player1Speed=1;
         }
         if(e.getKeyCode()==KeyEvent.VK_UP){
-            player2Speed=-2;
+            player2Speed=-1;
         }
         else if(e.getKeyCode()==KeyEvent.VK_DOWN){
-            player2Speed=2;
+            player2Speed=1;
+        }
+        else if(e.getKeyCode()==KeyEvent.VK_T){
+            delay=50;
         }
 
     }
